@@ -1,0 +1,8 @@
+config: 
+  ci_host: 'http://ec2-184-73-38-42.compute-1.amazonaws.com:8080/'
+  job_name: 'Bonnie'
+  poll_interval: '10s'
+  sounds:
+    success: './sounds/success.wav'
+    failure: './sounds/failure.aiff'
+  play_sounds: true
