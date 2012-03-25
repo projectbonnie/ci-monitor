@@ -19,7 +19,7 @@ module CI
         i=0;
         scheduler.every(APP_CONFIG['poll_interval']) do
           poll_state
-          puts "STATE IS: #{@current_state}"
+          puts "STATE IS: #{@current_state}, IS_WORKING: #{@is_working}"
         end
         
         scheduler.join
@@ -32,9 +32,14 @@ module CI
       
       def change_state(state)
         return if state == @current_state
+        set_is_working
         @current_state = state
-        mark_state
-        play_sound if (APP_CONFIG['play_sounds'] and @initialized)
+        play_sound if (APP_CONFIG['play_sounds'] and @initialized and @current_state != @is_working)
+        set_is_working
+      end
+      
+      def set_is_working
+        @is_working = @current_state if ([SUCCESS,FAILURE].include? @current_state)
       end
       
       def mark_state
