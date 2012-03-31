@@ -8,6 +8,8 @@ module CI
       BUILDING='building'
       
       def initialize
+        @light = Blinky.new.light
+        @light.init_blink
         poll_state
         @initialized = true
       end
@@ -34,6 +36,7 @@ module CI
         return if state == @current_state
         set_is_working
         @current_state = state
+        mark_state
         play_sound if (APP_CONFIG['play_sounds'] and @initialized and @current_state != @is_working)
         set_is_working
       end
@@ -46,9 +49,14 @@ module CI
         case @current_state
         when SUCCESS
           puts "state changed to SUCCESS"
+          @light.blinking = {active: false}
+          @light.success!
         when FAILURE
+          @light.blinking = {active: false}
+          @light.failure!
           puts "state changed to FAILURE"
         when BUILDING
+          @light.blinking = {active: true, status: @is_working}
           puts "state changed to BUILDING"
         else
           puts "Nothing to do for state: #{@current_state}"

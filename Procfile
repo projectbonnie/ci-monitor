@@ -1,1 +1,1 @@
-worker: bundle exec rake monitor:jenkins --trace
+worker: bundle exec rake monitor:jenkins --trace >> monitor.log

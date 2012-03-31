@@ -1,3 +1,5 @@
+source 'https://rubygems.org'
+
 gem 'blinky'
 gem 'jenkins-remote-api'
 gem 'rake'
