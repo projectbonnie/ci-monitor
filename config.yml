@@ -1,7 +1,9 @@
 config: 
-  ci_host: 'http://bucket.mitre.org/hudson/'
-  job_name: 'popHealth Web Application'
-  poll_interval: '10s'
+  ci_implementation: 'travis'
+  ci_host: 'http://travis-ci.org'
+  job_name: 'bonnie'
+  repository_name: 'pophealth'
+  poll_interval: '30s'
   blink_interval: '2s'
   blink_off_time: 1
   sounds:

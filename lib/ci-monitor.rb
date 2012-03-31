@@ -7,5 +7,7 @@ require 'blinky'
 
 require_relative 'monitor-job'
 require_relative 'light'
+require_relative 'ci-tools/jenkins'
+require_relative 'ci-tools/travis'
 
 APP_CONFIG = YAML.load_file(File.expand_path("../../config.yml", __FILE__))['config']
