@@ -1,14 +1,20 @@
 module CI
-  module Jenkins
-    require 'jenkins-remote-api'
     class MonitorJob
       
       SUCCESS='success'
       FAILURE='failure'
       BUILDING='building'
+      UNKNOWN='unknown'
       
       def initialize
-        poll_state
+        case APP_CONFIG['ci_implementation']
+        when 'jenkins'
+          @ci_endpoint = CI::Endpoint::Jenkins.new
+        when 'travis'
+          @ci_endpoint = CI::Endpoint::Travis.new
+        end
+        
+        change_state(@ci_endpoint.poll_state)
         @initialized = true
       end
       
@@ -18,18 +24,15 @@ module CI
 
         i=0;
         scheduler.every(APP_CONFIG['poll_interval']) do
-          poll_state
+          change_state(@ci_endpoint.poll_state)
+          
           puts "STATE IS: #{@current_state}, IS_WORKING: #{@is_working}"
         end
         
         scheduler.join
         
       end
-      
-      def poll_state
-        change_state(Ci::Jenkins.new(APP_CONFIG['ci_host']).current_status_on_job APP_CONFIG['job_name'])
-      end
-      
+            
       def change_state(state)
         return if state == @current_state
         set_is_working
@@ -60,5 +63,4 @@ module CI
         system("playsound #{sound}") unless sound.nil?
       end
     end
-  end
 end
