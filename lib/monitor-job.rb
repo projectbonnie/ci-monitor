@@ -9,6 +9,7 @@ module CI
       def initialize
         @light = Blinky.new.light
         @light.init_blink
+        @last_build_number=nil
 
         case APP_CONFIG['ci_implementation']
         when 'jenkins'
@@ -17,7 +18,7 @@ module CI
           @ci_endpoint = CI::Endpoint::Travis.new
         end
         
-        change_state(@ci_endpoint.poll_state)
+        change_state(@ci_endpoint.poll_state[:state])
         @initialized = true
       end
       
@@ -27,7 +28,10 @@ module CI
 
         i=0;
         scheduler.every(APP_CONFIG['poll_interval']) do
-          change_state(@ci_endpoint.poll_state)
+          poll_result = @ci_endpoint.poll_state
+          change_state(poll_result[:state])
+          run_after_success(poll_result[:build_number]) if poll_result[:state] == SUCCESS
+          
           
           puts "STATE IS: #{@current_state}, IS_WORKING: #{@is_working}"
         end
@@ -64,6 +68,13 @@ module CI
           puts "state changed to BUILDING"
         else
           puts "Nothing to do for state: #{@current_state}"
+        end
+      end
+
+      def run_after_success(build_number)
+        if (!build_number.nil? && build_number != @last_build_number)
+          @last_build_number = build_number
+          system("touch /Users/pophealth/ci-monitor/after_success/rebuild_#{APP_CONFIG['job_name']}_#{@last_build_number}.command")
         end
       end
       

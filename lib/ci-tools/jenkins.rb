@@ -5,7 +5,7 @@ module CI
     class Jenkins
     
       def poll_state
-        Ci::Jenkins.new(APP_CONFIG['ci_host']).current_status_on_job APP_CONFIG['job_name']
+        {state: Ci::Jenkins.new(APP_CONFIG['ci_host']).current_status_on_job(APP_CONFIG['job_name']), build_number: nil}
       end
     
     end
